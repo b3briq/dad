@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<title>Игра для Папы ❤️</title>
+<style>
+    body {
+        margin: 0;
+        overflow: hidden;
+        background: #000;
+        color: white;
+        font-family: Arial, sans-serif;
+    }
+
+    #gameArea {
+        position: relative;
+        width: 100vw;
+        height: 100vh;
+        overflow: hidden;
+    }
+
+    #target {
+        position: absolute;
+        width: 70px;
+        height: 70px;
+        object-fit: contain;
+        cursor: pointer;
+        display: none;
+        filter: drop-shadow(0 0 10px rgba(255,255,255,0.8));
+        transition: transform 0.1s;
+    }
+
+    #stats {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        font-size: 20px;
+        z-index: 10;
+        background: rgba(0,0,0,0.5);
+        padding: 10px 15px;
+        border-radius: 8px;
+    }
+
+    #message {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.9);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        font-size: 60px;
+        font-weight: bold;
+        text-align: center;
+        z-index: 50;
+        color: #FFD700;
+        text-shadow: 0 0 25px #ff6;
+    }
+
+    /* Блёстки на фоне */
+    .sparkle {
+        position: absolute;
+        width: 3px;
+        height: 3px;
+        background: white;
+        opacity: 0.8;
+        animation: sparkleAnim 2s infinite ease-in-out;
+    }
+
+    @keyframes sparkleAnim {
+        0% { transform: scale(1); opacity: 0.8; }
+        50% { transform: scale(2); opacity: 0.3; }
+        100% { transform: scale(1); opacity: 0.8; }
+    }
+</style>
+</head>
+<body>
+
+<div id="gameArea">
+    <div id="stats">Очки: <span id="score">0</span> | Время: <span id="time">30</span> сек</div>
+    <img id="target" src="ziel.jpg" alt="Цель">
+    <div id="message">🎉 С ДНЁМ ОТЦА!!! 🎉</div>
+</div>
+
+<script>
+let score = 0;
+let timeLeft = 30;
+let gameInterval;
+let timerInterval;
+
+const scoreEl = document.getElementById('score');
+const timeEl = document.getElementById('time');
+const target = document.getElementById('target');
+const message = document.getElementById('message');
+const gameArea = document.getElementById('gameArea');
+
+function randomPosition() {
+    const x = Math.random() * (window.innerWidth - 100);
+    const y = Math.random() * (window.innerHeight - 100);
+    target.style.left = x + "px";
+    target.style.top = y + "px";
+}
+
+function startGame() {
+    target.style.display = "block";
+    randomPosition();
+    timerInterval = setInterval(() => {
+        timeLeft--;
+        timeEl.textContent = timeLeft;
+        if (timeLeft <= 0) endGame();
+    }, 1000);
+    gameInterval = setInterval(randomPosition, 700);
+}
+
+function endGame() {
+    clearInterval(gameInterval);
+    clearInterval(timerInterval);
+    target.style.display = "none";
+    message.style.display = "flex";
+    launchFireworks();
+    playSound();
+}
+
+target.onclick = () => {
+    score++;
+    scoreEl.textContent = score;
+    target.style.transform = "scale(0.85)";
+    setTimeout(() => target.style.transform = "scale(1)", 150);
+};
+
+startGame();
+
+/* 🎆 Фейерверки */
+function launchFireworks() {
+    for (let i = 0; i < 15; i++) {
+        setTimeout(() => createFirework(), i * 300);
+    }
+}
+
+function createFirework() {
+    const fire = document.createElement("div");
+    fire.classList.add("firework");
+    fire.style.position = "absolute";
+    fire.style.width = "6px";
+    fire.style.height = "6px";
+    fire.style.borderRadius = "50%";
+    fire.style.background = "white";
+    fire.style.top = Math.random() * window.innerHeight + "px";
+    fire.style.left = Math.random() * window.innerWidth + "px";
+    fire.style.boxShadow = "0 0 15px white";
+    fire.style.transition = "transform 1s, opacity 1.5s";
+    document.body.appendChild(fire);
+    setTimeout(() => {
+        fire.style.transform = "scale(15)";
+        fire.style.opacity = "0";
+    }, 50);
+    setTimeout(() => fire.remove(), 2000);
+}
+
+/* ✨ Блёстки */
+for (let i = 0; i < 200; i++) {
+    const sp = document.createElement("div");
+    sp.classList.add("sparkle");
+    sp.style.top = Math.random() * window.innerHeight + "px";
+    sp.style.left = Math.random() * window.innerWidth + "px";
+    sp.style.animationDelay = Math.random() * 2 + "s";
+    gameArea.appendChild(sp);
+}
+
+/* 🎺 Короткий звук — встроенный base64 */
+function playSound() {
+    const audio = new Audio("data:audio/mp3;base64,//uQxAAADhY...");
+    audio.play();
+}
+</script>
+
+</body>
+</html>
